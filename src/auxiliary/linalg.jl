@@ -62,6 +62,7 @@ module MatrixAlgebra
 
 using LinearAlgebra
 using LinearAlgebra: BlasFloat, BlasReal, BlasComplex, checksquare
+using Strided: StridedView
 
 using ..TensorKit: OrthogonalFactorizationAlgorithm,
                    QL, QLpos, QR, QRpos, LQ, LQpos, RQ, RQpos, SVD, SDD, Polar
@@ -86,6 +87,14 @@ end
 
 safesign(s::Real) = ifelse(s < zero(s), -one(s), +one(s))
 safesign(s::Complex) = ifelse(iszero(s), one(s), s / abs(s))
+
+function matmul!(C::DenseMatrix, A::DenseMatrix, B::DenseMatrix, α::Number, β::Number)
+    return LinearAlgebra.mul!(StridedView(C), StridedView(A), StridedView(B), α, β)
+end
+function matmul!(C::AbstractMatrix, A::AbstractMatrix, B::AbstractMatrix, α::Number,
+                 β::Number)
+    return LinearAlgebra.mul!(C, A, B, α, β)
+end
 
 function leftorth!(A::StridedMatrix{<:BlasFloat}, alg::Union{QR,QRpos}, atol::Real)
     iszero(atol) || throw(ArgumentError("nonzero atol not supported by $alg"))
