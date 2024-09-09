@@ -39,6 +39,9 @@ const TensorSpace{S<:ElementarySpace} = Union{S,ProductSpace{S}}
 const TensorMapSpace{S<:ElementarySpace,N₁,N₂} = HomSpace{S,ProductSpace{S,N₁},
                                                           ProductSpace{S,N₂}}
 
+numin(W::HomSpace) = length(domain(W))
+numout(W::HomSpace) = length(codomain(W))
+
 function Base.getindex(W::TensorMapSpace{<:IndexSpace,N₁,N₂}, i) where {N₁,N₂}
     return i <= N₁ ? codomain(W)[i] : dual(domain(W)[i - N₁])
 end
