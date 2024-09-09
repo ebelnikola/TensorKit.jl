@@ -167,6 +167,11 @@ Base.convert(::Type{TensorMap}, b::BraidingTensor) = TensorMap(b)
 
 function block(b::BraidingTensor, s::Sector)
     sectortype(b) == typeof(s) || throw(SectorMismatch())
+
+    if s ∉ blocksectors(b) # at least one of the two matrix dimensions will be zero
+        return storagetype(b)(undef, (blockdim(codomain(b), s), blockdim(domain(b), s)))
+    end
+
     (V1, V2) = domain(b)
     if sectortype(b) == Trivial
         d1, d2 = dim(V1), dim(V2)
