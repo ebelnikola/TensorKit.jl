@@ -52,6 +52,12 @@ struct TensorMap{T, S<:IndexSpace, N₁, N₂, I<:Sector, A<:Union{<:DenseMatrix
 end
 #! format: on
 
+function TensorMap{T,S,N₁,N₂,I,A,F₁,F₂}(::UndefInitializer,
+                                        V::TensorMapSpace{S,N₁,N₂}) where {T,S,N₁,N₂,I,A,F₁,
+                                                                           F₂}
+    return TensorMap{T,S,N₁,N₂,I,A,F₁,F₂}(undef, codomain(V), domain(V))
+end
+
 """
     Tensor{T, S, N, I, A, F₁, F₂} = TensorMap{T, S, N, 0, I, A, F₁, F₂}
 
