@@ -69,6 +69,10 @@ function TO.tensoradd_type(TC, A::AbstractTensorMap, ::Index2Tuple{N₁,N₂},
     M = similarstoragetype(A, TC)
     return tensormaptype(spacetype(A), N₁, N₂, M)
 end
+function TO.tensoradd_type(TC, A::AdjointTensorMap, pA::Index2Tuple{N₁,N₂},
+                           conjA::Bool) where {N₁,N₂}
+    return TO.tensoradd_type(TC, adjoint(A), pA, conjA)
+end
 
 function TO.tensoradd_structure(A::AbstractTensorMap, pA::Index2Tuple{N₁,N₂},
                                 conjA::Bool) where {N₁,N₂}
@@ -131,6 +135,27 @@ function TO.tensorcontract_type(TC,
         throw(ArgumentError("incompatible storage types:\n$(M) ≠ $(similarstoragetype(B, TC))"))
     spacetype(A) == spacetype(B) || throw(SpaceMismatch("incompatible space types"))
     return tensormaptype(spacetype(A), N₁, N₂, M)
+end
+function TO.tensorcontract_type(TC,
+                                A::AdjointTensorMap, pA::Index2Tuple, conjA::Bool,
+                                B::AbstractTensorMap, pB::Index2Tuple, conjB::Bool,
+                                pAB::Index2Tuple{N₁,N₂}) where {N₁,N₂}
+    return TO.tensorcontract_type(TC, adjoint(A), adjointtensorindices(A, pA), false,
+                                  B, pB, conjB, pAB)
+end
+function TO.tensorcontract_type(TC,
+                                A::AbstractTensorMap, pA::Index2Tuple, conjA::Bool,
+                                B::AdjointTensorMap, pB::Index2Tuple, conjB::Bool,
+                                pAB::Index2Tuple{N₁,N₂}) where {N₁,N₂}
+    return TO.tensorcontract_type(TC, A, pA, conjA, adjoint(B), adjointtensorindices(B, pB),
+                                  false, pAB)
+end
+function TO.tensorcontract_type(TC,
+                                A::AdjointTensorMap, pA::Index2Tuple, conjA::Bool,
+                                B::AdjointTensorMap, pB::Index2Tuple, conjB::Bool,
+                                pAB::Index2Tuple{N₁,N₂}) where {N₁,N₂}
+    return TO.tensorcontract_type(TC, adjoint(A), adjointtensorindices(A, pA), false,
+                                  adjoint(B), adjointtensorindices(B, pB), false, pAB)
 end
 
 function TO.tensorcontract_structure(A::AbstractTensorMap, pA::Index2Tuple, conjA::Bool,
